@@ -1,11 +1,11 @@
-import hashlib
-import datetime
-from datetime import date, timedelta
-from typing import List, Dict
-
-import pandas as pd
-import requests
 import streamlit as st
+from datetime import date, timedelta
+from campsite_finder.utils import (
+    simulate_availability,
+    color_for_status,
+    find_reservation_url,
+    is_jp_holiday,
+)
 
 
 st.set_page_config(page_title="Family Campsite Availability Finder", layout="wide")
@@ -54,59 +54,6 @@ CAMPSITES = [
     },
 ]
 
-
-JP_HOLIDAYS: Dict[str, str] = {
-    # Example set — extend as needed. Format: YYYY-MM-DD: "Holiday Name"
-    "2026-01-01": "New Year's Day",
-    "2026-02-11": "National Foundation Day",
-    "2026-04-29": "Showa Day",
-    "2026-05-03": "Constitution Memorial Day",
-    "2026-05-04": "Greenery Day",
-    "2026-05-05": "Children's Day",
-    "2026-09-23": "Autumnal Equinox Day",
-    "2026-11-03": "Culture Day",
-    "2026-11-23": "Labor Thanksgiving Day",
-    "2026-10-??": "Sports Day (variable)",
-}
-
-
-def is_jp_holiday(d: date) -> bool:
-    return d.isoformat() in JP_HOLIDAYS
-
-
-def md5_int(s: str) -> int:
-    return int(hashlib.md5(s.encode("utf-8")).hexdigest()[:8], 16)
-
-
-def simulate_availability(site_name: str, start: date, end: date, types: List[str]) -> pd.DataFrame:
-    rows = []
-    delta = (end - start).days
-    for i in range(delta + 1):
-        d = start + timedelta(days=i)
-        for t in types:
-            seed = f"{site_name}|{d.isoformat()}|{t}"
-            v = md5_int(seed) % 100
-            # deterministic thresholds: 0-9 Full, 10-29 Few Left, 30-99 Available
-            if v < 10:
-                status = "🔴 Full"
-            elif v < 30:
-                status = "🟡 Few Left"
-            else:
-                status = "🟢 Available"
-            rows.append({"Date": d, "Type": t, "Status": status})
-    df = pd.DataFrame(rows)
-    return df
-
-
-def color_for_status(val):
-    if isinstance(val, str):
-        if val.startswith("🟢"):
-            return "background-color: #b7f5b7"
-        if val.startswith("🟡"):
-            return "background-color: #fff4b3"
-        if val.startswith("🔴"):
-            return "background-color: #f5b7b7"
-    return ""
 
 
 def main():
