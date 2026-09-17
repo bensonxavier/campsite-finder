@@ -29,5 +29,5 @@ jobs:
       - name: Run tests
         run: |
           # Run linting first to catch undefined names and similar issues
-          flake8 app.py campsite_finder tests || true
+          flake8 --select=E9,F821,F822,F823,F831 app.py campsite_finder tests
           pytest -q

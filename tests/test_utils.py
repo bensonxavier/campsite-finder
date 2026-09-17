@@ -1,8 +1,13 @@
 import datetime
 from datetime import date, timedelta
 
+import os
+import sys
 import pandas as pd
 import pytest
+
+# Ensure repo root is on sys.path for imports when running tests locally
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from campsite_finder import utils
 

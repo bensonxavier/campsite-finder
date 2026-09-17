@@ -1,10 +1,10 @@
 import streamlit as st
 import pandas as pd
+import requests
 from datetime import date, timedelta
 from campsite_finder.utils import (
     simulate_availability,
     color_for_status,
-    find_reservation_url,
     is_jp_holiday,
 )
 
