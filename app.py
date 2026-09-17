@@ -247,9 +247,14 @@ def main():
                 for a in site["activities"]:
                     st.markdown(f"- {a}")
                 label = "Reservation page" if reservation_link != site.get("url") else "Official page"
-                st.markdown(
-                    f'<a href="{reservation_link}" target="_blank">{label}</a>', unsafe_allow_html=True
-                )
+                st.markdown(f'<a href="{reservation_link}" target="_blank">{label}</a>', unsafe_allow_html=True)
+                # If we couldn't find a distinct reservation page, offer a search link to help users locate booking
+                if reservation_link == site.get("url"):
+                    import urllib.parse
+
+                    q = urllib.parse.quote_plus(f"{site['name']} reservation booking")
+                    search_url = f"https://www.google.com/search?q={q}"
+                    st.markdown(f'<a href="{search_url}" target="_blank">Search for reservation page</a>', unsafe_allow_html=True)
 
             with right:
                 df = simulate_availability(site["name"], start, end, [t for t in selected_types if t in site["types"]])
