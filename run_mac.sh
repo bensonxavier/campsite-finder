@@ -13,6 +13,9 @@ source "$VENV_DIR/bin/activate"
 pip install --upgrade pip
 pip install -r "$ROOT_DIR/requirements.txt"
 
+# Disable Streamlit telemetry for this run (explicit env var)
+export STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
+
 IP_ADDR="$(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || echo "localhost")"
 
 echo "Starting Streamlit on 0.0.0.0:8501 (accessible as http://$IP_ADDR:8501 on your LAN)"
