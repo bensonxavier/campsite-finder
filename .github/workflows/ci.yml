@@ -24,8 +24,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          pip install pytest
+          pip install pytest flake8
 
       - name: Run tests
         run: |
+          # Run linting first to catch undefined names and similar issues
+          flake8 app.py campsite_finder tests || true
           pytest -q

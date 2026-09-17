@@ -5,3 +5,6 @@ def test_app_import():
     # importing app should not raise at module import time
     import importlib
     importlib.import_module('app')
+    import app
+    # ensure pandas is imported in the app module to avoid runtime NameError
+    assert hasattr(app, "pd")
