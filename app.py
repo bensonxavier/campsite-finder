@@ -17,6 +17,7 @@ CAMPSITES = [
         "region": "Mt. Fuji",
         "activities": ["Kids playground", "Splash area", "Forest trails"],
         "url": "https://pica-resort.jp/en/fuji_grinpa/",
+        "reservation_url": "https://pica-resort.jp/en/fuji_grinpa/",
         "types": ["Cabin / Cottage", "Tent Site", "Glamping / Dome"],
     },
     {
@@ -24,6 +25,7 @@ CAMPSITES = [
         "region": "Mt. Fuji",
         "activities": ["Lake views", "Kids workshop", "BBQ area"],
         "url": "https://pica-resort.jp/en/fujiyoshida/",
+        "reservation_url": "https://pica-resort.jp/en/fujiyoshida/",
         "types": ["Cabin / Cottage", "Tent Site"],
     },
     {
@@ -31,6 +33,7 @@ CAMPSITES = [
         "region": "Mt. Fuji",
         "activities": ["Open grass fields", "Stargazing", "Kids playground"],
         "url": "https://www.fumotoppara.co.jp/",
+        "reservation_url": "https://www.fumotoppara.co.jp/",
         "types": ["Tent Site", "Glamping / Dome"],
     },
     {
@@ -38,6 +41,7 @@ CAMPSITES = [
         "region": "Saitama",
         "activities": ["Amusement park", "Children's pool", "Nature trails"],
         "url": "https://www.opark.co.jp/ogose/",
+        "reservation_url": "https://www.opark.co.jp/ogose/",
         "types": ["Cabin / Cottage", "Tent Site"],
     },
     {
@@ -45,6 +49,7 @@ CAMPSITES = [
         "region": "Nasu Kogen",
         "activities": ["Tree hammocks", "Play area", "Campfire program"],
         "url": "https://nasukogen.camp/",
+        "reservation_url": "https://nasukogen.camp/",
         "types": ["Cabin / Cottage", "Glamping / Dome"],
     },
 ]
@@ -205,6 +210,11 @@ def main():
             return results
 
         def find_reservation_url(site: dict) -> str:
+            # If the dataset contains an explicit canonical reservation_url, prefer it when reachable
+            explicit = site.get("reservation_url")
+            if explicit and validate_url(explicit):
+                return explicit
+
             base = site.get("url")
 
             # quick candidates (common paths)
