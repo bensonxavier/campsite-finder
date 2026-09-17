@@ -171,20 +171,44 @@ def main():
     # Main layout: grouped by campsite
     for site in filtered_sites:
         # determine best reservation link by probing common paths
+        import re
+        from urllib.parse import urljoin
+
+        HEADERS = {
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        }
+
         def validate_url(u: str) -> bool:
             try:
-                resp = requests.head(u, allow_redirects=True, timeout=5)
+                resp = requests.head(u, allow_redirects=True, timeout=6, headers=HEADERS)
+                if resp.status_code < 400:
+                    return True
+            except Exception:
+                pass
+            try:
+                resp = requests.get(u, allow_redirects=True, timeout=8, headers=HEADERS)
                 return resp.status_code < 400
             except Exception:
-                try:
-                    resp = requests.get(u, allow_redirects=True, timeout=5)
-                    return resp.status_code < 400
-                except Exception:
-                    return False
+                return False
+
+        def _extract_candidate_links(html: str, base: str):
+            # find href attributes and return absolute URLs containing booking keywords
+            hrefs = re.findall(r'href=["\']([^"\']+)["\']', html, flags=re.IGNORECASE)
+            keywords = ["reserve", "reservation", "booking", "book", "reserve_", "reserva"]
+            results = []
+            for h in hrefs:
+                low = h.lower()
+                if any(k in low for k in keywords):
+                    # make absolute
+                    results.append(urljoin(base, h))
+            return results
 
         def find_reservation_url(site: dict) -> str:
             base = site.get("url")
-            candidates = [
+
+            # quick candidates (common paths)
+            common = [
                 base,
                 base.rstrip("/") + "/reserve",
                 base.rstrip("/") + "/reservation",
@@ -193,9 +217,24 @@ def main():
                 base.rstrip("/") + "/reserve/",
                 base.rstrip("/") + "/booking",
             ]
-            for c in candidates:
+
+            # try common candidates first
+            for c in common:
                 if validate_url(c):
                     return c
+
+            # fetch base page and search for booking links
+            try:
+                resp = requests.get(base, allow_redirects=True, timeout=8, headers=HEADERS)
+                if resp.status_code < 400 and resp.text:
+                    candidates = _extract_candidate_links(resp.text, base)
+                    for c in candidates:
+                        if validate_url(c):
+                            return c
+            except Exception:
+                pass
+
+            # fallback: return base URL (may be the only entry point)
             return base
 
         reservation_link = find_reservation_url(site)
