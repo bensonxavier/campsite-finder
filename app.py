@@ -54,6 +54,14 @@ CAMPSITES = [
         "reservation_url": "https://reser.camp-cabins.com/cc_reserve/sv_open",
         "types": ["Cabin / Cottage", "Glamping / Dome"],
     },
+    {
+        "name": "Aone Campground",
+        "region": "Kanagawa",
+        "activities": ["River access", "Nature trails", "Family camping"],
+        "url": "https://aonecamp.jp/",
+        "reservation_url": "https://aonecamp.jp/reserve/",
+        "types": ["Tent Site", "Cabin / Cottage"],
+    },
 ]
 
 

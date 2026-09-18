@@ -26,3 +26,6 @@ def test_app_import():
 
     ogose = next(site for site in app.CAMPSITES if site["name"] == "BIO-RESORT HOTEL & SPA OPARK Ogose")
     assert ogose["reservation_url"] == "https://go-onsendojo.reservation.jp/ja/hotels/opark/searchInput"
+
+    aone = next(site for site in app.CAMPSITES if site["name"] == "Aone Campground")
+    assert aone["reservation_url"] == "https://aonecamp.jp/reserve/"
