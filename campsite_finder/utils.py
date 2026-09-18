@@ -106,10 +106,13 @@ def find_reservation_url(site: dict) -> str:
         base.rstrip("/") + "/reserve/",
         base.rstrip("/") + "/booking",
     ]
-    for c in common:
+
+    # Try common candidate paths except the plain base first (prefer explicit booking endpoints)
+    for c in common[1:]:
         if validate_url(c):
             return c
 
+    # Fetch base page and search for booking links; prefer any discovered booking links
     try:
         resp = requests.get(base, allow_redirects=True, timeout=8, headers=HEADERS)
         if resp.status_code < 400 and resp.text:
@@ -120,4 +123,7 @@ def find_reservation_url(site: dict) -> str:
     except Exception:
         pass
 
+    # If nothing explicit found, fall back to base (or check it now)
+    if validate_url(base):
+        return base
     return base

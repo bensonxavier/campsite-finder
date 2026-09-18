@@ -6,5 +6,8 @@ def test_app_import():
     import importlib
     importlib.import_module('app')
     import app
+    from campsite_finder import utils
+
     # ensure pandas is imported in the app module to avoid runtime NameError
     assert hasattr(app, "pd")
+    assert app.find_reservation_url is utils.find_reservation_url
