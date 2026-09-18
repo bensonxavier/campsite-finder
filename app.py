@@ -6,6 +6,7 @@ from campsite_finder.utils import (
     color_for_status,
     find_reservation_url,
     is_jp_holiday,
+    verify_reservation_page,
 )
 
 
@@ -144,6 +145,10 @@ def main():
 
             with right:
                 df = simulate_availability(site["name"], start, end, [t for t in selected_types if t in site["types"]])
+                booking_check = verify_reservation_page(reservation_link, start)
+                df["Price"] = booking_check["Price"]
+                df["Verification"] = booking_check["Verification"]
+                df["Availability verification"] = booking_check["Availability"]
                 # filter date types by priority
                 df = df[df["Date"].apply(date_matches)]
                 if not include_full:
@@ -158,8 +163,8 @@ def main():
                     df_display["Date"] = pd.to_datetime(df_display["Date"])
                     df_display["Date"] = df_display["Date"].dt.strftime("%Y-%m-%d (%a)")
                     df_display = df_display.sort_values(["Date", "Type"])
-                    styled = df_display.style.applymap(color_for_status, subset=["Status"])  # type: ignore
-                    st.dataframe(styled, use_container_width=True)
+                    styled = df_display.style.map(color_for_status, subset=["Status"])
+                    st.dataframe(styled, width="stretch")
 
 
 if __name__ == "__main__":
