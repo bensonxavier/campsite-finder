@@ -23,3 +23,6 @@ def test_app_import():
 
     nasu = next(site for site in app.CAMPSITES if site["name"] == "CAMP AND CABINS Nasu Kogen")
     assert nasu["reservation_url"] == "https://reser.camp-cabins.com/cc_reserve/sv_open"
+
+    ogose = next(site for site in app.CAMPSITES if site["name"] == "BIO-RESORT HOTEL & SPA OPARK Ogose")
+    assert ogose["reservation_url"] == "https://go-onsendojo.reservation.jp/ja/hotels/opark/searchInput"

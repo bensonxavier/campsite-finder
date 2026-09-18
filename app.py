@@ -42,7 +42,7 @@ CAMPSITES = [
         "region": "Saitama",
         "activities": ["Amusement park", "Children's pool", "Nature trails"],
         "url": "https://www.opark.co.jp/ogose/",
-        "reservation_url": "https://www.opark.co.jp/ogose/",
+        "reservation_url": "https://go-onsendojo.reservation.jp/ja/hotels/opark/searchInput",
         "types": ["Cabin / Cottage", "Tent Site"],
     },
     {
