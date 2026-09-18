@@ -18,7 +18,7 @@ CAMPSITES = [
         "region": "Mt. Fuji",
         "activities": ["Kids playground", "Splash area", "Forest trails"],
         "url": "https://pica-resort.jp/en/fuji_grinpa/",
-        "reservation_url": "https://pica-resort.jp/en/fuji_grinpa/",
+        "reservation_url": "https://booking.pica-resort.jp/v3/calendar/stay/3",
         "types": ["Cabin / Cottage", "Tent Site", "Glamping / Dome"],
     },
     {
@@ -50,7 +50,7 @@ CAMPSITES = [
         "region": "Nasu Kogen",
         "activities": ["Tree hammocks", "Play area", "Campfire program"],
         "url": "https://nasukogen.camp/",
-        "reservation_url": "https://nasukogen.camp/",
+        "reservation_url": "https://reser.camp-cabins.com/cc_reserve/sv_open",
         "types": ["Cabin / Cottage", "Glamping / Dome"],
     },
 ]
