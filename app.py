@@ -6,6 +6,7 @@ from campsite_finder.utils import (
     color_for_status,
     find_reservation_url,
     is_jp_holiday,
+    verify_reservation_page,
 )
 
 
@@ -18,7 +19,7 @@ CAMPSITES = [
         "region": "Mt. Fuji",
         "activities": ["Kids playground", "Splash area", "Forest trails"],
         "url": "https://pica-resort.jp/en/fuji_grinpa/",
-        "reservation_url": "https://pica-resort.jp/en/fuji_grinpa/",
+        "reservation_url": "https://booking.pica-resort.jp/v3/calendar/stay/3",
         "types": ["Cabin / Cottage", "Tent Site", "Glamping / Dome"],
     },
     {
@@ -26,15 +27,15 @@ CAMPSITES = [
         "region": "Mt. Fuji",
         "activities": ["Lake views", "Kids workshop", "BBQ area"],
         "url": "https://pica-resort.jp/en/fujiyoshida/",
-        "reservation_url": "https://pica-resort.jp/en/fujiyoshida/",
+        "reservation_url": "https://booking.pica-resort.jp/v3/calendar/stay/1",
         "types": ["Cabin / Cottage", "Tent Site"],
     },
     {
         "name": "Fumotoppara",
         "region": "Mt. Fuji",
         "activities": ["Open grass fields", "Stargazing", "Kids playground"],
-        "url": "https://www.fumotoppara.co.jp/",
-        "reservation_url": "https://www.fumotoppara.co.jp/",
+        "url": "https://fumotoppara.net/en/",
+        "reservation_url": "https://fumotoppara.net/en/reservation/",
         "types": ["Tent Site", "Glamping / Dome"],
     },
     {
@@ -42,7 +43,7 @@ CAMPSITES = [
         "region": "Saitama",
         "activities": ["Amusement park", "Children's pool", "Nature trails"],
         "url": "https://www.opark.co.jp/ogose/",
-        "reservation_url": "https://www.opark.co.jp/ogose/",
+        "reservation_url": "https://go-onsendojo.reservation.jp/ja/hotels/opark/searchInput",
         "types": ["Cabin / Cottage", "Tent Site"],
     },
     {
@@ -50,7 +51,7 @@ CAMPSITES = [
         "region": "Nasu Kogen",
         "activities": ["Tree hammocks", "Play area", "Campfire program"],
         "url": "https://nasukogen.camp/",
-        "reservation_url": "https://nasukogen.camp/",
+        "reservation_url": "https://reser.camp-cabins.com/cc_reserve/sv_open",
         "types": ["Cabin / Cottage", "Glamping / Dome"],
     },
 ]
@@ -144,6 +145,10 @@ def main():
 
             with right:
                 df = simulate_availability(site["name"], start, end, [t for t in selected_types if t in site["types"]])
+                booking_check = verify_reservation_page(reservation_link, start)
+                df["Price"] = booking_check["Price"]
+                df["Verification"] = booking_check["Verification"]
+                df["Availability verification"] = booking_check["Availability"]
                 # filter date types by priority
                 df = df[df["Date"].apply(date_matches)]
                 if not include_full:
@@ -158,8 +163,8 @@ def main():
                     df_display["Date"] = pd.to_datetime(df_display["Date"])
                     df_display["Date"] = df_display["Date"].dt.strftime("%Y-%m-%d (%a)")
                     df_display = df_display.sort_values(["Date", "Type"])
-                    styled = df_display.style.applymap(color_for_status, subset=["Status"])  # type: ignore
-                    st.dataframe(styled, use_container_width=True)
+                    styled = df_display.style.map(color_for_status, subset=["Status"])
+                    st.dataframe(styled, width="stretch")
 
 
 if __name__ == "__main__":

@@ -77,3 +77,33 @@ def test_find_reservation_url_scrapes_links(monkeypatch):
 
     chosen = utils.find_reservation_url(site)
     assert chosen.endswith("/reserve") or chosen.endswith("/reserve/")
+
+
+def test_verify_reservation_page_reports_date_and_price(monkeypatch):
+    class DummyResp:
+        status_code = 200
+        text = "<h1>2026-09-20</h1><p>Price: 12,000円</p>"
+
+    monkeypatch.setattr(utils.requests, "get", lambda *args, **kwargs: DummyResp())
+
+    result = utils.verify_reservation_page("https://example.com/booking", date(2026, 9, 20))
+
+    assert result == {
+        "Price": "12,000円",
+        "Verification": "Date/price tokens found; confirm selection",
+        "Availability": "Not verified; booking selection required",
+    }
+
+
+def test_verify_reservation_page_does_not_claim_date_verification_without_date(monkeypatch):
+    class DummyResp:
+        status_code = 200
+        text = "<p>From ¥8,500</p>"
+
+    monkeypatch.setattr(utils.requests, "get", lambda *args, **kwargs: DummyResp())
+
+    result = utils.verify_reservation_page("https://example.com/booking", date(2026, 9, 20))
+
+    assert result["Price"] == "¥8,500"
+    assert result["Verification"] == "Page price found; date not confirmed"
+    assert result["Availability"] == "Not verified; booking selection required"

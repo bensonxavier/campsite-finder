@@ -1,6 +1,9 @@
 import hashlib
+import re
 from datetime import date, timedelta
 from typing import List, Dict
+from html import unescape
+from urllib.parse import urljoin
 
 import pandas as pd
 import requests
@@ -57,13 +60,61 @@ def color_for_status(val):
     return ""
 
 
-from urllib.parse import urljoin
-import re
-
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 }
+
+
+def verify_reservation_page(url: str, target_date: date) -> Dict[str, str]:
+    """Check whether a booking page exposes a price for the requested date.
+
+    Reservation systems commonly require JavaScript/date selection, so a reachable
+    page is not treated as proof that a date-specific price or availability exists.
+    """
+    try:
+        response = requests.get(url, allow_redirects=True, timeout=12, headers=HEADERS)
+        if response.status_code >= 400:
+            return {
+                "Price": "Not available",
+                "Verification": f"Page returned HTTP {response.status_code}",
+                "Availability": "Not verified",
+            }
+    except Exception as exc:
+        return {
+            "Price": "Not available",
+            "Verification": f"Page check failed: {type(exc).__name__}",
+            "Availability": "Not verified",
+        }
+
+    text = unescape(re.sub(r"<[^>]+>", " ", response.text))
+    text = " ".join(text.split())
+    price_matches = re.findall(r"(?:¥|￥)\s*[\d,]+|[\d,]+\s*円", text)
+    prices = list(dict.fromkeys(price_matches))
+    date_tokens = {
+        target_date.isoformat(),
+        target_date.strftime("%Y/%m/%d"),
+        target_date.strftime("%-m/%-d"),
+    }
+    date_found = any(token in text for token in date_tokens)
+
+    if prices and date_found:
+        return {
+            "Price": prices[0],
+            "Verification": "Date/price tokens found; confirm selection",
+            "Availability": "Not verified; booking selection required",
+        }
+    if prices:
+        return {
+            "Price": prices[0],
+            "Verification": "Page price found; date not confirmed",
+            "Availability": "Not verified; booking selection required",
+        }
+    return {
+        "Price": "Not exposed",
+        "Verification": "Page reachable; date/price not exposed",
+        "Availability": "Not verified; booking selection required",
+    }
 
 
 def validate_url(u: str) -> bool:

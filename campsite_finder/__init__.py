@@ -5,6 +5,7 @@ from .utils import (
     is_jp_holiday,
     color_for_status,
     find_reservation_url,
+    verify_reservation_page,
 )
 
 __all__ = [
@@ -13,4 +14,5 @@ __all__ = [
     "is_jp_holiday",
     "color_for_status",
     "find_reservation_url",
+    "verify_reservation_page",
 ]
