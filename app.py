@@ -33,8 +33,8 @@ CAMPSITES = [
         "name": "Fumotoppara",
         "region": "Mt. Fuji",
         "activities": ["Open grass fields", "Stargazing", "Kids playground"],
-        "url": "https://www.fumotoppara.co.jp/",
-        "reservation_url": "https://www.fumotoppara.co.jp/",
+        "url": "https://fumotoppara.net/en/",
+        "reservation_url": "https://fumotoppara.net/en/reservation/",
         "types": ["Tent Site", "Glamping / Dome"],
     },
     {
