@@ -14,3 +14,6 @@ def test_app_import():
 
     fumotoppara = next(site for site in app.CAMPSITES if site["name"] == "Fumotoppara")
     assert fumotoppara["reservation_url"] == "https://fumotoppara.net/en/reservation/"
+
+    fujiyoshida = next(site for site in app.CAMPSITES if site["name"] == "PICA Fujiyoshida")
+    assert fujiyoshida["reservation_url"] == "https://booking.pica-resort.jp/v3/calendar/stay/1"

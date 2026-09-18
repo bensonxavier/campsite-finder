@@ -26,7 +26,7 @@ CAMPSITES = [
         "region": "Mt. Fuji",
         "activities": ["Lake views", "Kids workshop", "BBQ area"],
         "url": "https://pica-resort.jp/en/fujiyoshida/",
-        "reservation_url": "https://pica-resort.jp/en/fujiyoshida/",
+        "reservation_url": "https://booking.pica-resort.jp/v3/calendar/stay/1",
         "types": ["Cabin / Cottage", "Tent Site"],
     },
     {
